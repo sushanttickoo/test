@@ -15,7 +15,7 @@ def hello():
     except RedisError:
         visits = "<i>Sorry Brah!!! Can't help it</i>"
 
-    html = "<h3>Hello {name}!</h3>" \
+    html = "<h3>Hello {there}!</h3>" \
            "<b>Hostname:</b> {hostname}<br/>" \
            "<b>Visits:</b> {visits}"
     return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname(), visits=visits)
