@@ -1,24 +1,20 @@
-from flask import Flask
-from redis import Redis, RedisError
-import os
-import socket
+# Use an official Python runtime as a parent image
+FROM python:2.7-slim
 
-# Connect to Redis
-redis = Redis(host="redis", db=0, socket_connect_timeout=2, socket_timeout=2)
+# Set the working directory to /app
+WORKDIR /app
 
-app = Flask(__name__)
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-@app.route("/")
-def hello():
-    try:
-        visits = redis.incr("counter")
-    except RedisError:
-        visits = "<i>cannot connect to Redis, counter disabled</i>"
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-    html = "<h3>Hello {name}!</h3>" \
-           "<b>Hostname:</b> {hostname}<br/>" \
-           "<b>Visits:</b> {visits}"
-    return html.format(name=os.getenv("NAME", "world"), hostname=socket.gethostname(), visits=visits)
+# Make port 80 available to the world outside this container
+EXPOSE 80
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80)
+# Define environment variable
+ENV NAME World
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
